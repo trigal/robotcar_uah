@@ -17,26 +17,47 @@ import select
 import termios
 
 import filterpy
+import LS7366R
 
 def isData():
     return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
 
 
-            
+integral_error = 0
+
+def speed_pid_controller(speed_ref, speed):
+    global integral_error
+
+    kp = 0.1
+    ki = 1.
+
+    error = speed_ref - speed
+    integral_error += error
+
+    u = kp*error + ki*integral_error
+    if u < 0:
+        u = 0
+    elif u > 255:
+        u = 255
+
+    return u
+
 def coche2():
     
     ESC=14      # ESC en el pin 14 GPIO
     MOTOR=15
-    frequency = 500 #Hz
-    T = 0.1
-    f = 1.0/T
+    pwm_frequency = 2500 #Hz
+    T = 0.01
 
     pig = pigpio.pi()  
-    #pig_motor = pigpio.pi('motor')  
-    pig.set_PWM_frequency(MOTOR,frequency)
+    pig.set_PWM_frequency(MOTOR,pwm_frequency)
 
     pwm_angle = 1700
-    dutycycle = 100
+    dutycycle = 0
+
+    encoder = LS7366R.LS7366R(0, 3900000, 4)
+    cur_encoder_position = 0
+    pre_encoder_position = 0
 
     print("Introduzca el angulo en grados entre 0 y 60 y pulse enter")
     old_settings = termios.tcgetattr(sys.stdin)
@@ -46,11 +67,20 @@ def coche2():
 
             # Wheel angle 
             pig.set_servo_pulsewidth(ESC, 0)
-            print ('Wheel angle: ' + str(pwm_angle))
+
+            # Encoder 
+            pre_encoder_position = cur_encoder_position
+            cur_encoder_position = encoder.readCounter()
+            print ("Encoder count: ", encoder.readCounter(), " Press CTRL-C to terminate test program.")
+            motor_speed = abs((cur_encoder_position - pre_encoder_position)/T)
+            print ('Motor speed: ' + str(motor_speed))
+
+            # Controller
+            dutycycle = speed_pid_controller(6000, motor_speed)
+
 
             # Motor 
             pig.set_PWM_dutycycle(MOTOR, dutycycle)
-            print ('Dutycycle: ' + str(dutycycle))
         
             timer1 = time.time()  
             dt = timer1-timer0
@@ -64,7 +94,11 @@ def coche2():
         
 
 if __name__ == '__main__':
-    coche2()               
+    try:
+      coche2()               
+    except KeyboardInterrupt:
+      #ecoder.close()
+      print ("All done, bye bois.")
             
 
 

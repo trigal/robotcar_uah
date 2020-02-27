@@ -56,8 +56,8 @@ class LS7366R():
         self.spi.max_speed_hz = CLK #Speed of clk (modifies speed transaction) 
 
         #Init the Encoder
-        print 'Clearing Encoder CS%s\'s Count...\t' % (str(CSX)), self.clearCounter()
-        print 'Clearing Encoder CS%s\'s Status..\t' % (str(CSX)), self.clearStatus()
+        print ('Clearing Encoder CS%s\'s Count...\t' % (str(CSX)), self.clearCounter())
+        print ('Clearing Encoder CS%s\'s Status..\t' % (str(CSX)), self.clearStatus())
 
         self.spi.xfer2([self.WRITE_MODE0, self.FOURX_COUNT])
         
@@ -66,7 +66,7 @@ class LS7366R():
         self.spi.xfer2([self.WRITE_MODE1, self.BYTE_MODE[self.counterSize-1]])
 
     def close(self):
-        print '\nThanks for using me! :)'
+        print ('\nThanks for using me! :)')
         self.spi.close()
 
     def clearCounter(self):
@@ -105,14 +105,14 @@ class LS7366R():
 if __name__ == "__main__":
     from time import sleep
     
-    encoder = LS7366R(0, 1000000, 4)
+    encoder = LS7366R(0, 7629, 4)
     try:
         while True:
-            print "Encoder count: ", encoder.readCounter(), " Press CTRL-C to terminate test program."
+            print ("Encoder count: ", encoder.readCounter(), " Press CTRL-C to terminate test program.")
             sleep(0.2)
     except KeyboardInterrupt:
         encoder.close()
-        print "All done, bye bois."
+        print ("All done, bye bois.")
 
     
         
