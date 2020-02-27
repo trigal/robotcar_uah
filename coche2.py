@@ -32,9 +32,14 @@ def isData():
 def coche2():
     
     ESC=14      # ESC en el pin 14 GPIO
+    MOTOR=15
+    frequency = 100 #Hz
     T = 0.1
+    f = 1.0/T
 
-    pig = pigpio.pi()  
+    pig_servo = pigpio.pi('servo')  
+    pig_motor = pigpio.pi('motor')  
+    pig_motor.set_PWM_frequency(MOTOR,frequency)
 
     print("Introduzca el angulo en grados entre 0 y 60 y pulse enter")
     old_settings = termios.tcgetattr(sys.stdin)
@@ -43,7 +48,11 @@ def coche2():
             timer0 = time.time()                          # Inicio el contador de tiempo para contar el tiempo de muestreo
 
             # Wheel angle 
-            pig.set_servo_pulsewidth(ESC, 0)
+            pig_servo.set_servo_pulsewidth(ESC, 0)
+
+            # Motor 
+            dutycycle = 10
+            pig_motor.set_PWM_dutycycle(MOTOR, dutycycle)
         
             timer1 = time.time()  
             dt = timer1-timer0
