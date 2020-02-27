@@ -16,9 +16,7 @@ import sys
 import select
 import termios
 
-from filterpy.kalman import UnscentedKalmanFilter as UKF
-from filterpy.kalman import unscented_transform, MerweScaledSigmaPoints
-from filterpy.common import Q_discrete_white_noise
+import filterpy
 
 error_ant=0
 error_integral =0
@@ -41,14 +39,17 @@ def coche2():
     pig_motor = pigpio.pi('motor')  
     pig_motor.set_PWM_frequency(MOTOR,frequency)
 
+    pwm_angle = 1700
+
     print("Introduzca el angulo en grados entre 0 y 60 y pulse enter")
     old_settings = termios.tcgetattr(sys.stdin)
     try:
-        while (timer < T_sim):   # El bucle dura 65 sec para que de tiempo a detectar todas las oscilaciones hasta que el sistema se pare completamente.
+        while (True):   # El bucle dura 65 sec para que de tiempo a detectar todas las oscilaciones hasta que el sistema se pare completamente.
             timer0 = time.time()                          # Inicio el contador de tiempo para contar el tiempo de muestreo
 
             # Wheel angle 
             pig_servo.set_servo_pulsewidth(ESC, 0)
+            print ('Wheel angle: ' + str(pwm_angle))
 
             # Motor 
             dutycycle = 10
