@@ -18,10 +18,6 @@ import termios
 
 import filterpy
 
-error_ant=0
-error_integral =0
-Km = 0.004198202773919557
-
 def isData():
     return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
 
@@ -31,15 +27,16 @@ def coche2():
     
     ESC=14      # ESC en el pin 14 GPIO
     MOTOR=15
-    frequency = 100 #Hz
+    frequency = 500 #Hz
     T = 0.1
     f = 1.0/T
 
-    pig_servo = pigpio.pi('servo')  
-    pig_motor = pigpio.pi('motor')  
-    pig_motor.set_PWM_frequency(MOTOR,frequency)
+    pig = pigpio.pi()  
+    #pig_motor = pigpio.pi('motor')  
+    pig.set_PWM_frequency(MOTOR,frequency)
 
     pwm_angle = 1700
+    dutycycle = 100
 
     print("Introduzca el angulo en grados entre 0 y 60 y pulse enter")
     old_settings = termios.tcgetattr(sys.stdin)
@@ -48,12 +45,12 @@ def coche2():
             timer0 = time.time()                          # Inicio el contador de tiempo para contar el tiempo de muestreo
 
             # Wheel angle 
-            pig_servo.set_servo_pulsewidth(ESC, 0)
+            pig.set_servo_pulsewidth(ESC, 0)
             print ('Wheel angle: ' + str(pwm_angle))
 
             # Motor 
-            dutycycle = 10
-            pig_motor.set_PWM_dutycycle(MOTOR, dutycycle)
+            pig.set_PWM_dutycycle(MOTOR, dutycycle)
+            print ('Dutycycle: ' + str(dutycycle))
         
             timer1 = time.time()  
             dt = timer1-timer0
