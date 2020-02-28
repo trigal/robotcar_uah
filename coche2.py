@@ -7,7 +7,7 @@ import os                       #importing os library so as to communicate with 
 import time                     #importing time library to make Rpi wait because its too impatient 
 os.system ("sudo pigpiod")      #Launching GPIO library
 time.sleep(1)                   # As i said it is too impatient and so if this delay is removed you will get an error
-import pigpio                   # importing GPIO library
+#import pigpio                   # importing GPIO library
 import json
 import matplotlib.pyplot as  plt
 import numpy as np
@@ -17,7 +17,39 @@ import select
 import termios
 
 import filterpy
-import LS7366R
+#import LS7366R
+import threading
+
+class Thread_Keyboard(threading.Thread):
+    def __init__(self, threadName):
+        threading.Thread.__init__(self)
+        self.threadName = threadName
+        self.wheel_position = 0
+        self.dutycycle = 0
+        print ("Thread created: " + self.threadName)
+ 
+    def run(self):
+        print ("Starting treading: " + self.threadName)
+
+        aux = input()
+        print(aux)
+        if aux == 'j':
+            self.wheel_position -= 1
+        elif aux == 'l':
+            self.wheel_position += 1
+        elif aux == 'i':
+            self.dutycycle += 1
+        elif aux == 'k':
+            self.dutycycle -= 1
+ 
+    def get_wheel_position(self):
+        return self.wheel_position
+
+    def get_dutycycle(self):
+        return self.dutycycle
+
+    def stop(self):
+        print ("Stoping treading: " + self.threadName)
 
 def isData():
     return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
@@ -42,20 +74,20 @@ def speed_pid_controller(speed_ref, speed):
 
     return u
 
-def coche2():
+def coche2(thread_keyboard):
     
     ESC=14      # ESC en el pin 14 GPIO
     MOTOR=15
     pwm_frequency = 2500 #Hz
     T = 0.01
 
-    pig = pigpio.pi()  
-    pig.set_PWM_frequency(MOTOR,pwm_frequency)
+    #pig = pigpio.pi()  
+    #pig.set_PWM_frequency(MOTOR,pwm_frequency)
 
     pwm_angle = 1700
     dutycycle = 0
 
-    encoder = LS7366R.LS7366R(0, 3900000, 4)
+    #encoder = LS7366R.LS7366R(0, 3900000, 4)
     cur_encoder_position = 0
     pre_encoder_position = 0
 
@@ -65,22 +97,25 @@ def coche2():
         while (True):   # El bucle dura 65 sec para que de tiempo a detectar todas las oscilaciones hasta que el sistema se pare completamente.
             timer0 = time.time()                          # Inicio el contador de tiempo para contar el tiempo de muestreo
 
-            # Wheel angle 
-            pig.set_servo_pulsewidth(ESC, 0)
+            wheel_position = thread_keyboard.get_wheel_position()
+            #print (wheel_position)
 
-            # Encoder 
-            pre_encoder_position = cur_encoder_position
-            cur_encoder_position = encoder.readCounter()
-            print ("Encoder count: ", encoder.readCounter(), " Press CTRL-C to terminate test program.")
-            motor_speed = abs((cur_encoder_position - pre_encoder_position)/T)
-            print ('Motor speed: ' + str(motor_speed))
+            ## Wheel angle 
+            #pig.set_servo_pulsewidth(ESC, 0)
 
-            # Controller
-            dutycycle = speed_pid_controller(6000, motor_speed)
+            ## Encoder 
+            #pre_encoder_position = cur_encoder_position
+            #cur_encoder_position = encoder.readCounter()
+            #print ("Encoder count: ", encoder.readCounter(), " Press CTRL-C to terminate test program.")
+            #motor_speed = abs((cur_encoder_position - pre_encoder_position)/T)
+            #print ('Motor speed: ' + str(motor_speed))
+
+            ## Controller
+            #dutycycle = speed_pid_controller(6000, motor_speed)
 
 
-            # Motor 
-            pig.set_PWM_dutycycle(MOTOR, dutycycle)
+            ## Motor 
+            #pig.set_PWM_dutycycle(MOTOR, dutycycle)
         
             timer1 = time.time()  
             dt = timer1-timer0
@@ -95,9 +130,13 @@ def coche2():
 
 if __name__ == '__main__':
     try:
-      coche2()               
+      thread_keyboard = Thread_Keyboard(threadName='Thread Keyboard Reader')
+      thread_keyboard.start()
+
+      coche2(thread_keyboard)               
     except KeyboardInterrupt:
       #ecoder.close()
+      thread_keyboard.stop()
       print ("All done, bye bois.")
             
 
