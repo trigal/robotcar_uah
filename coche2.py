@@ -7,7 +7,6 @@ import os                       #importing os library so as to communicate with 
 import time                     #importing time library to make Rpi wait because its too impatient 
 os.system ("sudo pigpiod")      #Launching GPIO library
 time.sleep(1)                   # As i said it is too impatient and so if this delay is removed you will get an error
-#import pigpio                   # importing GPIO library
 import json
 import matplotlib.pyplot as  plt
 import numpy as np
@@ -16,37 +15,45 @@ import sys
 import select
 import termios
 
+import pigpio                   # importing GPIO library
 import filterpy
-#import LS7366R
+import LS7366R
 import threading
 
 class Thread_Keyboard(threading.Thread):
     def __init__(self, threadName):
         threading.Thread.__init__(self)
         self.threadName = threadName
-        self.wheel_position = 0
-        self.dutycycle = 0
+        self.wheel_position = 1700
+        self.speed_ref = 0
         print ("Thread created: " + self.threadName)
  
     def run(self):
         print ("Starting treading: " + self.threadName)
 
-        aux = input()
-        print(aux)
-        if aux == 'j':
-            self.wheel_position -= 1
-        elif aux == 'l':
-            self.wheel_position += 1
-        elif aux == 'i':
-            self.dutycycle += 1
-        elif aux == 'k':
-            self.dutycycle -= 1
+        while (True):
+          aux = input()
+          if aux == 'j':
+             if self.wheel_position > 1300:
+               self.wheel_position -= 1
+          elif aux == 'l':
+             if self.wheel_position < 2100:
+               self.wheel_position += 1
+          elif aux == 'i':
+               self.speed_ref += 100
+          elif aux == 'k':
+               self.speed_ref -= 100
+          elif aux == '0':
+               self.speed_ref = 0
+               self.wheel_position = 1700
+
+          print (self.speed_ref)
  
     def get_wheel_position(self):
         return self.wheel_position
 
-    def get_dutycycle(self):
-        return self.dutycycle
+    def get_speed_ref(self):
+        return self.speed_ref
 
     def stop(self):
         print ("Stoping treading: " + self.threadName)
@@ -61,14 +68,14 @@ def speed_pid_controller(speed_ref, speed):
     global integral_error
 
     kp = 0.1
-    ki = 1.
+    ki = 0.095
 
     error = speed_ref - speed
     integral_error += error
 
     u = kp*error + ki*integral_error
-    if u < 0:
-        u = 0
+    if u < 50:
+        u = 50
     elif u > 255:
         u = 255
 
@@ -76,60 +83,50 @@ def speed_pid_controller(speed_ref, speed):
 
 def coche2(thread_keyboard):
     
-    ESC=14      # ESC en el pin 14 GPIO
+    SERVO=14      # SERVO en el pin 14 GPIO
     MOTOR=15
-    pwm_frequency = 2500 #Hz
+    pwm_frequency = 20000 #Hz
     T = 0.01
 
-    #pig = pigpio.pi()  
-    #pig.set_PWM_frequency(MOTOR,pwm_frequency)
+    pig = pigpio.pi() 
+    pig.set_PWM_frequency(MOTOR,pwm_frequency)
 
-    pwm_angle = 1700
-    dutycycle = 0
-
-    #encoder = LS7366R.LS7366R(0, 3900000, 4)
+    encoder = LS7366R.LS7366R(0, 3900000, 4)
     cur_encoder_position = 0
     pre_encoder_position = 0
 
-    print("Introduzca el angulo en grados entre 0 y 60 y pulse enter")
-    old_settings = termios.tcgetattr(sys.stdin)
-    try:
-        while (True):   # El bucle dura 65 sec para que de tiempo a detectar todas las oscilaciones hasta que el sistema se pare completamente.
-            timer0 = time.time()                          # Inicio el contador de tiempo para contar el tiempo de muestreo
+    while (True):   # El bucle dura 65 sec para que de tiempo a detectar todas las oscilaciones hasta que el sistema se pare completamente.
+        timer0 = time.time()                          # Inicio el contador de tiempo para contar el tiempo de muestreo
 
-            wheel_position = thread_keyboard.get_wheel_position()
-            #print (wheel_position)
+        wheel_position = thread_keyboard.get_wheel_position()
 
-            ## Wheel angle 
-            #pig.set_servo_pulsewidth(ESC, 0)
+        # Wheel angle 
+        pig.set_servo_pulsewidth(SERVO, wheel_position)
 
-            ## Encoder 
-            #pre_encoder_position = cur_encoder_position
-            #cur_encoder_position = encoder.readCounter()
-            #print ("Encoder count: ", encoder.readCounter(), " Press CTRL-C to terminate test program.")
-            #motor_speed = abs((cur_encoder_position - pre_encoder_position)/T)
-            #print ('Motor speed: ' + str(motor_speed))
+        # Encoder 
+        pre_encoder_position = cur_encoder_position
+        cur_encoder_position = encoder.readCounter()
+        motor_speed = abs((cur_encoder_position - pre_encoder_position)/T)
 
-            ## Controller
-            #dutycycle = speed_pid_controller(6000, motor_speed)
+        ## Controller
+        speed_ref = thread_keyboard.get_speed_ref()
+        dutycycle = speed_pid_controller(speed_ref, motor_speed)
+        print ('SpeedRef MotorSpeed Dutycycle WheelPosition: ' + str([speed_ref, motor_speed, dutycycle, wheel_position]))
 
+        # Motor 
+        pig.set_PWM_dutycycle(MOTOR, dutycycle)
+    
+        timer1 = time.time()  
+        dt = timer1-timer0
+        if( dt < T):          
+            time.sleep(T - dt) 
+        else:
+            print('Sobrepasado tiempo de control')
 
-            ## Motor 
-            #pig.set_PWM_dutycycle(MOTOR, dutycycle)
-        
-            timer1 = time.time()  
-            dt = timer1-timer0
-            if( dt < T):          
-                time.sleep(T - dt) 
-            else:
-                print('Sobrepasado tiempo de control')
-
-    finally:
-        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
-        
 
 if __name__ == '__main__':
     try:
+      old_settings = termios.tcgetattr(sys.stdin)
       thread_keyboard = Thread_Keyboard(threadName='Thread Keyboard Reader')
       thread_keyboard.start()
 
@@ -137,7 +134,8 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
       #ecoder.close()
       thread_keyboard.stop()
-      print ("All done, bye bois.")
+      termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+      print ("All done, bye bye!!.")
             
 
 
