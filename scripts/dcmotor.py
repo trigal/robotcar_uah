@@ -47,17 +47,17 @@ def speed_callback_joystick(data):
     cmd = data.axes[1] * 255
     if cmd >= 0.0:
         if not forward:
-            rospy.loginfo("Waiting 0.5s, change direction required")
+            rospy.loginfo("Waiting 0.1s, change direction required")
             pig.set_PWM_dutycycle(PIN_MOTOR, 0)
-            time.sleep(0.5)                      
+            time.sleep(0.1)                      
             forward = True
         pig.write(20, 1)
         pig.write(21, 0)
     else:
         if forward:
-            rospy.loginfo("Waiting 0.5s, change direction required")
+            rospy.loginfo("Waiting 0.1s, change direction required")
             pig.set_PWM_dutycycle(PIN_MOTOR, 0)
-            time.sleep(0.5)     
+            time.sleep(0.1)     
             forward = False
         pig.write(20, 0)
         pig.write(21, 1)

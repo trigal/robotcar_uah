@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 import rospy
 from std_msgs.msg import Float32
-from nav_msgs.msg import Odometry.msg
+from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Joy
 
 import LS7366R
 
 from time import sleep
 
-T2R = 0 #tick to radian
+T2R = 0 #tick to radian. needs manual calibration.
 
 def vehicle_model(x,y,theta,other_parameters):
     """
@@ -23,6 +23,12 @@ def odometry():
     This node reads the encoder ticks, evaluate the odometry using the
     motion model and publishes the pose using TF.
     
+    ** LS7366R usage**
+        create an object by calling enc = LS7366R(CSX, CLK, BTMD) where:
+        CSX is either CE0 or CE1, 
+        CLK is the speed, 
+        BTMD is the bytemode 1-4 the resolution of your counter
+        
     """
     
     rospy.init_node("node_node", anonymous=True)
@@ -38,7 +44,7 @@ def odometry():
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
         
-        rospy.loginfo("Tick counter %f", encoder.readCounter())
+        rospy.loginfo("Tick counter %i", encoder.readCounter())
                         
         pre_encoder_position = cur_encoder_position
         cur_encoder_position = encoder.readCounter()
