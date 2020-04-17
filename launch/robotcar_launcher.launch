@@ -1,16 +1,21 @@
 <launch>
-        <node pkg="joy" name="joystick_node" type="joy_node" output="screen"></node>
+        <node pkg="joy" name="joystick_node" type="joy_node" output="log">
+        </node>
 
         <!-- Launch the dcmotor controller -->
-        <node pkg="robotcar_uah" name="dcmotor_node" type="dcmotor.py" output="screen">
+        <node pkg="robotcar_uah" name="dcmotor_node" type="dcmotor.py" output="log">
         </node>
 
         <!-- Launch the steering controller -->
-        <node pkg="robotcar_uah" name="steering_node" type="steering.py" output="screen">
+        <node pkg="robotcar_uah" name="steering_node" type="steering.py" output="log">
         </node>
         
         <!-- Launch the odometry node -->
         <node pkg="robotcar_uah" name="odometry_node" type="odometry.py" output="screen">
+        </node>
+        
+        <!-- Launch the system node -->
+        <node pkg="robotcar_uah" name="system_node" type="system.py" output="screen" required="True">
         </node>
 
 
