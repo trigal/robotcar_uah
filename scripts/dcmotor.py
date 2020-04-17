@@ -99,5 +99,8 @@ if __name__ == '__main__':
 
     listener()
     
-
+    # resetting the motor to zero speed
+    pig.set_PWM_dutycycle(PIN_MOTOR, 0)
+    
+    rospy.loginfo("Shutting down dcmotor_node")
 
