@@ -15,8 +15,10 @@
         </node>
         
         <!-- Launch the system node -->
-        <node pkg="robotcar_uah" name="system_node" type="system.py" output="screen" required="True">
+        <node pkg="robotcar_uah" name="system_node" type="system.py" output="log" required="True">
         </node>
+        
+        <node pkg="rviz" name="rviz" type="rviz" />
 
 
 </launch>
