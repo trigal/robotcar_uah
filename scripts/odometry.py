@@ -16,6 +16,7 @@ ST2R = 25.0 / 400.0 # (S)teering tick to radian. needs manual calibration.
 RAD2DEG = 180.0 / math.pi
 DEG2RAD = math.pi / 180.0
 L = 0.14 #meters
+TICKS2RAD = 0.00738408600245
 
 current_angle = 0.0
 motor_speed   = 0.0
@@ -46,7 +47,7 @@ def odometry():
     This node reads the encoder ticks, evaluate the odometry using the
     motion model and publishes the pose using TF.
     
-    ** LS7366R usage**
+    ** LS7366R usage**motor_speed
         create an object by calling enc = LS7366R(CSX, CLK, BTMD) where:
         CSX is either CE0 or CE1, 
         CLK is the speed, 
@@ -57,6 +58,7 @@ def odometry():
     rospy.init_node("node_node", anonymous=True)
     pub_vel = rospy.Publisher("current_speed", Float32, queue_size=1) 
     pub_ticks = rospy.Publisher("ticks", Int32, queue_size=1) 
+    pub_odometry = rospy.Publisher("odom", Odometry, queue_size=1)
     rospy.Subscriber("current_servo", Float32, steering_callback)
     broadcaster = tf.TransformBroadcaster()
     
@@ -71,6 +73,8 @@ def odometry():
     th= 0.
     
     node_freq = 10.0
+    
+    t=0.001
     
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
@@ -91,14 +95,33 @@ def odometry():
         y=y+math.sin(th)*delta_x+math.cos(th)*delta_y
         
         
-        broadcaster.sendTransform( (x,y,0), tf.transformations.quaternion_from_euler(0,0,th), rospy.Time.now(), "vehicle_frame","odom")
-        broadcaster.sendTransform( (L,-.05,0), tf.transformations.quaternion_from_euler(0,0,current_angle), rospy.Time.now(), "left_wheel","vehicle_frame")
-        broadcaster.sendTransform( (L, .05,0), tf.transformations.quaternion_from_euler(0,0,current_angle), rospy.Time.now(), "right_wheel","vehicle_frame")
+        broadcaster.sendTransform( (x,   y,0.03), tf.transformations.quaternion_from_euler(0,0,th), rospy.Time.now(), "vehicle_frame","odom")
+        broadcaster.sendTransform( (L,-.05,0.0), tf.transformations.quaternion_from_euler(0,0,current_angle), rospy.Time.now(), "front_left_wheel","vehicle_frame")
+        broadcaster.sendTransform( (L, .05,0.0), tf.transformations.quaternion_from_euler(0,0,current_angle), rospy.Time.now(), "front_right_wheel","vehicle_frame")
+        
+        t=t-(cur_encoder_position - pre_encoder_position)*TICKS2RAD
+        broadcaster.sendTransform( (0.,0.06,0.), tf.transformations.quaternion_from_euler(t,0,math.pi/2.0), rospy.Time.now(), "rear_left_wheel","vehicle_frame")
+        broadcaster.sendTransform( (0.,-0.06,0.), tf.transformations.quaternion_from_euler(-t,0,-math.pi/2.0), rospy.Time.now(), "rear_right_wheel","vehicle_frame")
+        
+        q = tf.transformations.quaternion_from_euler(0,0,th)
+        
+        msg_odom = Odometry()
+        msg_odom.header.stamp = rospy.Time.now()
+        msg_odom.header.frame_id = "odom"
+        msg_odom.pose.pose.position.x = x
+        msg_odom.pose.pose.position.y = y
+        msg_odom.pose.pose.position.z = 0.0
+        msg_odom.pose.pose.orientation.x = q[0]
+        msg_odom.pose.pose.orientation.y = q[1]
+        msg_odom.pose.pose.orientation.z = q[2]
+        msg_odom.pose.pose.orientation.w = q[3]
+              
         
         rospy.loginfo("Current speed %f m/s [%f km/h] -- yaw rate %f [rad/s]", motor_speed, motor_speed * 3.6, steering_speed)
         
         pub_vel.publish(motor_speed)
         pub_ticks.publish(cur_encoder_position)
+        pub_odometry.publish(msg_odom)
         
         rate.sleep()
         
