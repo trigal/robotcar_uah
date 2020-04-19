@@ -1,0 +1,1 @@
+export ROS_PYTHON_LOG_CONFIG_FILE=/home/pi/ros_uah/src/robotcar_uah/launch/raspberry_python_logging.conf
