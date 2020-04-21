@@ -1,5 +1,20 @@
 rosrun gmapping slam_gmapping_replay --bag_filename=/home/ballardini/robotcar_uah/bags/2020-04-21-18-50-16.bag _base_frame:=vehicle_frame _odom_frame:=odom _xmin:=5 _ymin:=5 _xmax:=5 _ymax:=5 _linearUpdate:=0.3 _delta:=0.025 _particles:=50 _stt:=0.5
 
+can view the map in rviz during exec time
+
+then... 
+
+rosrun map_server map_saver -f FILENAME
+
+and 
+
+rosrun map_server crop_map YAML_FILENAME, will create cropped.yaml/pgm
+
+to view the map 
+
+eog cropped.pgm
+
+
 Parameters
 ~inverted_laser (string, default: "false")
 (REMOVED in 1.1.1; transform data is used instead) Is the laser right side up (scans are ordered CCW), or upside down (scans are ordered CW)?
