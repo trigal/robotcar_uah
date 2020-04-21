@@ -6,7 +6,6 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /Grid1
         - /Odometry1/Shape1
       Splitter Ratio: 0.5
     Tree Height: 521
@@ -214,10 +213,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5753983855247498
+      Pitch: 0.8053983449935913
       Target Frame: vehicle_frame
       Value: XYOrbit (rviz)
-      Yaw: 4.648581504821777
+      Yaw: 3.4385807514190674
     Saved: ~
 Window Geometry:
   Displays:
@@ -235,5 +234,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1417
-  X: 187
-  Y: 80
+  X: 185
+  Y: 50
