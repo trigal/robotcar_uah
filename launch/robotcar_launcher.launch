@@ -16,6 +16,12 @@
         
         <!-- Launch the system node -->
         <node pkg="robotcar_uah" name="system_node" type="system.py" output="log" required="True">
+		<param name="setup_x"     type="double" value="0.0" />
+		<param name="setup_y"     type="double" value="0.0" />
+		<param name="setup_z"     type="double" value="0.0" />
+		<param name="setup_roll"  type="double" value="0.0" />
+		<param name="setup_pitch" type="double" value="0.0" />
+		<param name="setup_yaw"   type="double" value="3.10" />
         </node>
         
         <!-- Launch the system node -->
@@ -39,8 +45,8 @@
                 <param name="frequency"         type="double" value="5"/>
         </node>
         
-        <!-- Static Transform between the LIDAR frame and the vehicle_frame -->
+        <!-- Static Transform between the LIDAR frame and the vehicle_frame 
         <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser"
-                args="0.0 0.0 0.125 0.0 0.0 0.0 vehicle_frame laser_frame 1" />
+                args="0.0 0.0 0.125 0.0 0.0 0.0 vehicle_frame laser_frame 1" /> -->
 
 </launch>

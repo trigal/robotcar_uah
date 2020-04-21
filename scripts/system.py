@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 import rospy
+import tf
 from std_msgs.msg import Int32
 from sensor_msgs.msg import Joy
 import os
 import sys
+#from dynamic_reconfigure.server import Server
+#from robotcar_uah.cfg import system_configConfig
 
 from time import sleep
 
@@ -45,8 +48,23 @@ def listener():
     
     rospy.init_node('system_node', anonymous=True)
     rospy.Subscriber("joy", Joy, LTRTbuttons_joystick)
-    rospy.spin()
+   
+    rate = rospy.Rate(10)
+    broadcaster = tf.TransformBroadcaster()
+
+    while not rospy.is_shutdown():
+        param_x     = rospy.get_param('~setup_x')
+        param_y     = rospy.get_param('~setup_y')
+        param_z     = rospy.get_param('~setup_z')
+        param_roll  = rospy.get_param('~setup_roll')
+        param_pitch = rospy.get_param('~setup_pitch')
+        param_yaw   = rospy.get_param('~setup_yaw')
     
+        broadcaster.sendTransform( (param_x,param_y,param_z), tf.transformations.quaternion_from_euler(param_roll,param_pitch,param_yaw), rospy.Time.now(), "laser_frame", "vehicle_frame")
+
+        rate.sleep()
+
+
     rospy.loginfo("Shutting down steering_node")
 
 
