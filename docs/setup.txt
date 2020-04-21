@@ -1,0 +1,18 @@
+*** TO ADD THE XBOX CONTROLLER ***
+https://pimylifeup.com/xbox-controllers-raspberry-pi/
+
+sudo apt-get install xboxdrv
+echo 'options bluetooth disable_ertm=Y' | sudo tee -a /etc/modprobe.d/bluetooth.conf
+sudo reboot
+sudo bluetoothctl
+agent on
+default-agent
+scan on
+TAKE NOTE OF THE MAC ADDRESS OF THE XBOX CONTROLLER
+connect YOUR_MAC_ADDRESS
+trust YOUR_MAC_ADDRESS
+sudo apt-get install joystick
+sudo jstest /dev/input/js0
+
+The controller used for the experiments was the AUGUSTO-BLACK-SIGNED controller
+[NEW] Device 5C:BA:37:2D:2C:99 Xbox Wireless Controller
