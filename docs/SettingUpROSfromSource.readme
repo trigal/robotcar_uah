@@ -1,3 +1,25 @@
+add packages to ros from source
+
+
+Merge in Additional rosinstall Files
+
+GENERATE LIST OF WHAT YOU WANT:         rosinstall_generator robot --rosdistro melodic --deps --tar > melodic-robot.rosinstall
+MERGE THE SOURCES LISTS:                wstool merge -t src PATH_TO_ROSINSTALL_FILE.rosinstall
+UPDATE                                  wstool update -t src
+RESOLVE DEPENDENCIES:                   rosdep install --from-paths src --ignore-src --rosdistro melodic -y
+BUILD:                                  ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release
+
+---
+
+links:
+
+http://wiki.ros.org/wstool#Merge_in_Additional_rosinstall_Files
+http://wiki.ros.org/Installation/Source
+http://wiki.ros.org/rosinstall_generator
+
+
+---
+
 pi@raspberrypi:~/ros_catkin_ws $ wstool merge -t src melodic-custom_ros.rosinstall
 
      Change details of element (Use --merge-keep or --merge-replace to change):
@@ -13,4 +35,8 @@ Overwriting /home/pi/ros_catkin_ws/src/.rosinstall
 
 update complete.
 [1]+  Done                    gedit melodic-custom_ros.rosinstall
+
+
+--- 
+
 
