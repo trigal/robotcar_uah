@@ -1,0 +1,16 @@
+pi@raspberrypi:~/ros_catkin_ws $ wstool merge -t src melodic-custom_ros.rosinstall
+
+     Change details of element (Use --merge-keep or --merge-replace to change):
+  dynamic_reconfigure,  geometry/tf,  laser_geometry,  ros_comm/message_filters,  ros_comm/ros_comm,  ros_comm/rosbag,  ros_comm/rosbag_storage,  ros_comm/roscpp,  ros_comm/rosgraph,  ros_comm/roslaunch,  ros_comm/roslz4,  ros_comm/rosmaster,  ros_comm/rosmsg,  ros_comm/rosnode,  ros_comm/rosout,  ros_comm/rosparam,  ros_comm/rospy,  ros_comm/rosservice,  ros_comm/rostest,  ros_comm/rostopic,  ros_comm/roswtf,  ros_comm/topic_tools,  ros_comm/xmlrpcpp,  ros_control/combined_robot_hw,  ros_control/controller_interface,  ros_control/controller_manager,  ros_control/controller_manager_msgs,  ros_control/hardware_interface,  ros_control/joint_limits_interface,  ros_control/ros_control,  ros_control/transmission_interface,  urdf/urdf,  urdf/urdf_parser_plugin
+
+     Add new elements:
+  geometry2/tf2_geometry_msgs,  geometry2/tf2_sensor_msgs,  navigation/amcl,  navigation/costmap_2d,  navigation/map_server,  navigation/voxel_grid
+
+Continue: (y)es, (n)o, (v)erbosity, (a)dvanced options: 
+Continue: (y)es, (n)o, (v)erbosity, (a)dvanced options: y
+Config changed, maybe you need run wstool update to update SCM entries.
+Overwriting /home/pi/ros_catkin_ws/src/.rosinstall
+
+update complete.
+[1]+  Done                    gedit melodic-custom_ros.rosinstall
+

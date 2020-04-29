@@ -25,7 +25,7 @@
         </node>
         
         <!-- Launch the system node -->
-        <node pkg="rviz" name="rviz" type="rviz" args="-d $(find robotcar_uah)/launch/rviz.config.rviz"/>
+        <node pkg="rviz" name="rviz" type="rviz" args="-d $(find robotcar_uah)/launch/localization.rviz"/>
 
         <!-- Launch the LIDAR driver -->
         <node name="ydlidar_node"  pkg="ydlidar"  type="ydlidar_node" output="screen" respawn="false" >
@@ -45,7 +45,7 @@
                 <param name="frequency"         type="double" value="5"/>
         </node>
 
-        <node name="map_server" pkg="map_server" type="map_server" args="$(find robotcar_uah)/maps/crppped.yaml"/>-->
+        <node name="map_server" pkg="map_server" type="map_server" args="$(find robotcar_uah)/maps/cropped.yaml"/>
 
         <node name="amcl" pkg="amcl" type="amcl" output="screen" >
                 <!-- Not used, laser messages already in "scan" -->
