@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /TF1
       Splitter Ratio: 0.5
     Tree Height: 521
   - Class: rviz/Selection
@@ -38,7 +39,7 @@ Visualization Manager:
       Cell Size: 0.1899999976158142
       Class: rviz/Grid
       Color: 160; 160; 164
-      Enabled: true
+      Enabled: false
       Line Style:
         Line Width: 0.029999999329447746
         Value: Lines
@@ -49,9 +50,9 @@ Visualization Manager:
         Y: 0
         Z: 0
       Plane: XY
-      Plane Cell Count: 30
+      Plane Cell Count: 100
       Reference Frame: <Fixed Frame>
-      Value: true
+      Value: false
     - Class: rviz/Axes
       Enabled: false
       Length: 1
@@ -87,7 +88,7 @@ Visualization Manager:
           Value: true
         vehicle_frame:
           Value: true
-      Marker Scale: 0.30000001192092896
+      Marker Scale: 2
       Name: TF
       Show Arrows: true
       Show Axes: true
@@ -292,5 +293,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1417
-  X: 7
-  Y: -16
+  X: 3
+  Y: -76

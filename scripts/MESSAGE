@@ -1,0 +1,2 @@
+#!/bin/bash
+echo -e "\n\033[35;5m*****************************************\nNow you have 20 seconds to out provide the initial pose!\n*****************************************\n\033[0m"
