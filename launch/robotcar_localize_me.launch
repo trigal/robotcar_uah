@@ -1,0 +1,89 @@
+<launch>
+        <node pkg="joy" name="joystick_node" type="joy_node" output="log">
+        </node>
+
+        <!-- Launch the dcmotor controller -->
+        <node pkg="robotcar_uah" name="dcmotor_node" type="dcmotor.py" output="log">
+        </node>
+
+        <!-- Launch the steering controller -->
+        <node pkg="robotcar_uah" name="steering_node" type="steering.py" output="log">
+        </node>
+        
+        <!-- Launch the odometry node -->
+        <node pkg="robotcar_uah" name="odometry_node" type="odometry.py" output="screen">
+        </node>
+        
+        <!-- Launch the system node -->
+        <node pkg="robotcar_uah" name="system_node" type="system.py" output="log" required="True">
+		<param name="setup_x"     type="double" value="0.0" />
+		<param name="setup_y"     type="double" value="0.0" />
+		<param name="setup_z"     type="double" value="0.0" />
+		<param name="setup_roll"  type="double" value="0.0" />
+		<param name="setup_pitch" type="double" value="0.0" />
+		<param name="setup_yaw"   type="double" value="3.10" />
+        </node>
+        
+        <!-- Launch the system node -->
+        <node pkg="rviz" name="rviz" type="rviz" args="-d $(find robotcar_uah)/launch/rviz.config.rviz"/>
+
+        <!-- Launch the LIDAR driver -->
+        <node name="ydlidar_node"  pkg="ydlidar"  type="ydlidar_node" output="screen" respawn="false" >
+                <param name="port"              type="string" value="/dev/ydlidar"/>  
+                <param name="baudrate"          type="int"    value="115200"/>
+                <param name="frame_id"          type="string" value="laser_frame"/>
+                <param name="low_exposure"      type="bool"   value="false"/>
+                <param name="resolution_fixed"  type="bool"   value="true"/>
+                <param name="auto_reconnect"    type="bool"   value="true"/>
+                <param name="reversion"         type="bool"   value="false"/>
+                <param name="angle_min"         type="double" value="-180" />
+                <param name="angle_max"         type="double" value="180" />
+                <param name="range_min"         type="double" value="0.1" />
+                <param name="range_max"         type="double" value="16.0" />
+                <param name="ignore_array"      type="string" value="" />
+                <param name="samp_rate"         type="int"    value="9"/>
+                <param name="frequency"         type="double" value="5"/>
+        </node>
+
+        <node name="map_server" pkg="map_server" type="map_server" args="$(find robotcar_uah)/maps/crppped.yaml"/>-->
+
+        <node name="amcl" pkg="amcl" type="amcl" output="screen" >
+                <!-- Not used, laser messages already in "scan" -->
+                <!-- <remap from="scan" to="base_scan/scan" /> -->
+                
+                <!-- Overall filter parameters -->
+                <param name="min_particles" value="50"/>
+                <param name="max_particles" value="100"/>
+                <param name="kld_err" value="0.05"/>
+                <param name="kld_z" value="0.99"/>
+                <param name="update_min_d" value="0.2"/>
+                <param name="update_min_a" value="0.5"/>
+                <param name="resample_interval" value="1"/>
+                <param name="transform_tolerance" value="0.2"/>
+                <param name="recovery_alpha_slow" value="0.0"/>
+                <param name="recovery_alpha_fast" value="0.0"/>
+                <param name="gui_publish_rate" value="10.0"/>
+                
+                <!-- Laser model parameters -->
+                <param name="laser_max_beams" value="30"/>
+                <param name="laser_z_hit" value="0.5"/>
+                <param name="laser_z_short" value="0.05"/>
+                <param name="laser_z_max" value="0.05"/>
+                <param name="laser_z_rand" value="0.5"/>
+                <param name="laser_sigma_hit" value="0.2"/>
+                <param name="laser_lambda_short" value="0.1"/>
+                <param name="laser_model_type" value="likelihood_field"/>
+                <param name="laser_likelihood_max_dist" value="2.0"/>
+                
+                <!-- Odometery model parameters -->
+                <param name="odom_model_type" value="diff"/>
+                <param name="odom_alpha1" value="0.2"/>
+                <param name="odom_alpha2" value="0.2"/>
+                <param name="odom_alpha3" value="0.8"/>
+                <param name="odom_alpha4" value="0.2"/>
+                <param name="odom_frame_id" value="odom"/>
+                <param name="base_frame_id" value="vehicle_frame"/>
+                <param name="global_frame_id" value="map"/>
+        </node>
+        
+</launch>
