@@ -1,3 +1,9 @@
+<!-- 
+
+        Use this launcher to navigate the robot using the xbox-one joypad!
+
+--> 
+
 <launch>
         <node pkg="joy" name="joystick_node" type="joy_node" output="log">
         </node>
