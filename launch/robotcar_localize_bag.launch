@@ -1,3 +1,12 @@
+<!-- 
+
+        Use this launcher perform LOCALIZATION using the bag file 
+        specified in the ROSBAG line hereafter. Please note that also
+        a "starting position" was created, this is useful as you don not
+        need to open Rviz and quickly click on "set initial pose". 
+
+--> 
+
 <launch>
         <!-- Use the simulation time of the BAG -->
         <param name="/use_sim_time" value="True"/>

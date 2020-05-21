@@ -16,3 +16,20 @@ sudo jstest /dev/input/js0
 
 The controller used for the experiments was the AUGUSTO-BLACK-SIGNED controller
 [NEW] Device 5C:BA:37:2D:2C:99 Xbox Wireless Controller
+
+
+----- driver camera
+https://github.com/UbiquityRobotics/raspicam_node
+https://github.com/UbiquityRobotics/raspicam_node/issues/83
+
+#these are the dependencies
+$ rosinstall_generator ros_comm ros_control joystick_drivers map_server amcl costmap_2d compressed_image_transport dynamic_reconfigure diagnostic_updater camera_info_manager  --rosdistro melodic --deps --wet-only --tar > melodic-custom_ros.rosinstall
+$ rosdep install --from-paths src --ignore-src --rosdistro=melodic -y --skip-keys libraspberrypi0 --skip-keys libraspberrypi-dev
+
+https://github.com/UbiquityRobotics/raspicam_node
+
+For a V2.x camera, run roslaunch raspicam_node camerav2_1280x960.launch
+For a V2.x camera, run roslaunch raspicam_node camerav2_1280x960.launch
+
+roslaunch camerav2_410x308_30fps.launch
+

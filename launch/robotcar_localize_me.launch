@@ -1,4 +1,14 @@
+<!-- 
+
+        Use this launcher perform LOCALIZATION in "live-fashion". 
+        Remember to add an initial position estimate using RVIZ
+
+--> 
+
 <launch>
+
+        <include file="$(find raspicam_node)/launch/camerav2_410x308_30fps.launch" />
+
         <node pkg="joy" name="joystick_node" type="joy_node" output="log">
         </node>
 
@@ -24,8 +34,8 @@
 		<param name="setup_yaw"   type="double" value="3.10" />
         </node>
         
-        <!-- Launch the system node -->
-        <node pkg="rviz" name="rviz" type="rviz" args="-d $(find robotcar_uah)/launch/localization.rviz"/>
+        <!-- Launch the system node 
+        <node pkg="rviz" name="rviz" type="rviz" args="-d $(find robotcar_uah)/launch/localization.rviz"/> -->
 
         <!-- Launch the LIDAR driver -->
         <node name="ydlidar_node"  pkg="ydlidar"  type="ydlidar_node" output="screen" respawn="false" >
@@ -47,40 +57,50 @@
 
         <node name="map_server" pkg="map_server" type="map_server" args="$(find robotcar_uah)/maps/cropped.yaml"/>
 
-        <node name="amcl" pkg="amcl" type="amcl" output="screen" >
+        <node name="amcl" pkg="amcl" type="amcl" output="screen" required="True">
                 <!-- Not used, laser messages already in "scan" -->
                 <!-- <remap from="scan" to="base_scan/scan" /> -->
                 
                 <!-- Overall filter parameters -->
                 <param name="min_particles" value="50"/>
-                <param name="max_particles" value="100"/>
+                <param name="max_particles" value="5000"/>
                 <param name="kld_err" value="0.05"/>
                 <param name="kld_z" value="0.99"/>
-                <param name="update_min_d" value="0.2"/>
-                <param name="update_min_a" value="0.5"/>
-                <param name="resample_interval" value="1"/>
+                <param name="update_min_d" value="0.05"/> <!-- meters -->
+                <param name="update_min_a" value="0.018"/> <!-- rad -->
+                <param name="resample_interval" value="5"/>
                 <param name="transform_tolerance" value="0.2"/>
                 <param name="recovery_alpha_slow" value="0.0"/>
-                <param name="recovery_alpha_fast" value="0.0"/>
+                <param name="recovery_alpha_fast" value="1.0"/>
                 <param name="gui_publish_rate" value="10.0"/>
                 
                 <!-- Laser model parameters -->
-                <param name="laser_max_beams" value="30"/>
-                <param name="laser_z_hit" value="0.5"/>
+                <param name="laser_max_beams" value="40"/>
+                <param name="laser_z_hit" value="0.95"/>
                 <param name="laser_z_short" value="0.05"/>
                 <param name="laser_z_max" value="0.05"/>
-                <param name="laser_z_rand" value="0.5"/>
+                <param name="laser_z_rand" value="0.05"/>
                 <param name="laser_sigma_hit" value="0.2"/>
                 <param name="laser_lambda_short" value="0.1"/>
-                <param name="laser_model_type" value="likelihood_field"/>
+                <param name="laser_model_type" value="beam"/> 
                 <param name="laser_likelihood_max_dist" value="2.0"/>
                 
                 <!-- Odometery model parameters -->
-                <param name="odom_model_type" value="diff"/>
+                <!-- <param name="odom_model_type" value="diff"/> -->
+                <param name="odom_model_type" value="bicycle"/>
+                
+                <!-- for odometry model: diff 
+                <param name="odom_alpha1" value="2.8"/>
+                <param name="odom_alpha2" value="0.5"/>
+                <param name="odom_alpha3" value="0.5"/>
+                <param name="odom_alpha4" value="0.9"/> -->
+                
+                <!-- for odometry model: bicycle -->
                 <param name="odom_alpha1" value="0.2"/>
                 <param name="odom_alpha2" value="0.2"/>
-                <param name="odom_alpha3" value="0.8"/>
-                <param name="odom_alpha4" value="0.2"/>
+                <param name="odom_alpha3" value="0.2"/>
+                
+                
                 <param name="odom_frame_id" value="odom"/>
                 <param name="base_frame_id" value="vehicle_frame"/>
                 <param name="global_frame_id" value="map"/>
