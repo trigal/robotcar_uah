@@ -14,6 +14,12 @@ pwm_frequency = 20000 #Hz
 pig.set_mode(20, pigpio.OUTPUT);
 pig.set_mode(21, pigpio.OUTPUT);
 
+# HARDWARE SPEED LIMIT
+# Manually tuned. joypad gives values in -1..+1 range and the max speed 
+# is 255. FW/BW gear is handled with raspberry pins, use speed always
+# in the 0..255 range
+HARDWARE_SPEED_LIMIT = 175 
+
 forward = True
 
 def speed_callback_keyboard(data):
@@ -63,6 +69,11 @@ def speed_callback_joystick(data):
         pig.write(21, 1)
     cmd = abs(cmd)
     if cmd <= 255 and cmd >= 0:
+        
+        # limit the max speed
+        if cmd >= HARDWARE_SPEED_LIMIT:
+            cmd = HARDWARE_SPEED_LIMIT
+        
         if forward:
             rospy.loginfo("Speed Forward\t%i", cmd)
         else:

@@ -1,3 +1,9 @@
+<!-- 
+
+        Use this launcher to navigate the robot using the xbox-one joypad!
+
+--> 
+
 <launch>
         <node pkg="joy" name="joystick_node" type="joy_node" output="log">
         </node>
@@ -24,8 +30,8 @@
 		<param name="setup_yaw"   type="double" value="3.10" />
         </node>
         
-        <!-- Launch the system node -->
-        <node pkg="rviz" name="rviz" type="rviz" args="-d $(find robotcar_uah)/launch/rviz.config.rviz"/>
+        <!-- Launch the system node 
+        <node pkg="rviz" name="rviz" type="rviz" args="-d $(find robotcar_uah)/launch/rviz.config.rviz"/>  -->
 
         <!-- Launch the LIDAR driver -->
         <node name="ydlidar_node"  pkg="ydlidar"  type="ydlidar_node" output="screen" respawn="false" >
@@ -43,7 +49,7 @@
                 <param name="ignore_array"      type="string" value="" />
                 <param name="samp_rate"         type="int"    value="9"/>
                 <param name="frequency"         type="double" value="5"/>
-        </node>
+        </node> 
         
         <!-- Static Transform between the LIDAR frame and the vehicle_frame 
         <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser"
